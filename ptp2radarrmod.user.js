@@ -593,10 +593,7 @@ function new_movie_lookup(imdbid) {
     GM.xmlHttpRequest({
         method: "GET",
         url: radarr_url.concat("/api/v3/movie/lookup/?term=imdb%3A", imdbid),
-        headers: {
-            "X-Api-Key": radarr_apikey,
-            "Accept": "application/json"
-        },
+        headers: headers,
         onload: function (response) {
             let responseJSON = null;
             if (!response.responseJSON) {
