@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PTP To Radarr Mod
-// @version      1.4
+// @version      1.5
 // @author       Mod by Prism16 - Main Script by DirtyCajunRice / CatSpinner
 // @namespace    DirtyCajunRice
 // @description  A Mod Of PTP to Radarr
@@ -22,7 +22,7 @@
 
 /*=========================  Version History  ==================================
 
-Changelog 1.5   - Added authentication support for seedboxes
+Changelog 1.5   - Added authentication support for seedboxes & new_movie_lookup fix by @mcfloyd
 
 Changelog 1.4   - Aid added to this forum thread menu to help pulling profile id's for new installs / setups.
 
@@ -598,9 +598,12 @@ function new_movie_lookup(imdbid) {
     let movie = "";
     GM.xmlHttpRequest({
         method: "GET",
-        url: radarr_url.concat("/api/v3/movie/lookup/imdb?imdbId=", imdbid),
-        headers: headers,
-        onload: function (response) {
+        url: radarr_url.concat("/api/v3/movie/lookup/?term=imdb%3A", imdbid),
+        headers: {
+            "X-Api-Key": radarr_apikey,
+            "Accept": "application/json"
+        },
+        onload: function(response) {
             let responseJSON = null;
             if (!response.responseJSON) {
                 if (response.status == 401) {
@@ -611,14 +614,19 @@ function new_movie_lookup(imdbid) {
                     return;
                 }
                 responseJSON = JSON.parse(response.responseText);
-                add_movie(responseJSON, imdbid);
+                if (responseJSON.length > 0) {
+                    add_movie(responseJSON[0], imdbid);
+                } else {
+                    console.log('movie not found');
+                    return;
+                }
             }
         },
-        onerror: function () {
-            GM.notification("Request Error.\nCheck Radarr URL!", "PTP To Radarr");
+        onerror: function() {
+          GM.notification("Request Error.\nCheck Radarr URL!", "PTP To Radarr");
         },
-        onabort: function () {
-            GM.notification("Request is aborted.", "PTP To Radarr");
+        onabort: function() {
+          GM.notification("Request is aborted.", "PTP To Radarr");
         }
     });
 }
