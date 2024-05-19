@@ -45,6 +45,7 @@ style.innerHTML = `
 button, input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover, button:focus, input[type="button"]:focus, input[type="reset"]:focus, input[type="submit"]:focus {
     background: #4281da;
     box-shadow: none;
+    cursor: pointer;
     outline: 0;
 }
 `;
@@ -53,18 +54,19 @@ document.head.appendChild(style);
 GM_config.init({
     "id": "PTPToRadarr",
     "title": "PTP To Radarr Settings",
-    "css": `#PTPToRadarr {background: #333333;}
-            #PTPToRadarr .field_label {color: #fff;}
-            #PTPToRadarr .config_header {color: #fff; padding-bottom: 10px;}
-            #PTPToRadarr .reset {color: #f00; text-align: center;}
-            #PTPToRadarr .config_var {text-align: center;}
-            #PTPToRadarr_radarr_syncbutton_var {float: left;}
-            #PTPToRadarr .reset_holder {text-align: center;}
-            #PTPToRadarr_radarr_minimumavailability_var {padding-right: 95;}
-            #PTPToRadarr_radarr_apikey_var {padding-left: 49;}
-            #PTPToRadarr_radarr_url_var {padding-left: 69;}
-            #PTPToRadarr .saveclose_buttons {margin: 16px 10px 10px; padding: 2px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border: none; border-radius: 6px;}
-            #PTPToRadarr_field_radarr_syncbutton {background-color: #e7e7e7; color: black; text-decoration: none; border: none; border-radius: 6px; margin-left: 10px; margin-top: 16px; height: 20px;}`,
+    "css": `#PTPToRadarr {background: #333333; width: 100%; margin: 10px 0; padding: 0}
+            #PTPToRadarr .field_label {color: #fff; width: 100%;}
+            #PTPToRadarr .config_header {color: #fff; padding-bottom: 10px; font-weight: 100;}
+            #PTPToRadarr .reset {color: #f00; text-align: left;}
+            #PTPToRadarr .config_var {display: flex; flex-direction: row; text-align: left; justify-content: center; align-items: center; width: 75%; margin: 4px auto; padding: 4px 0; }
+            #PTPToRadarr_buttons_holder {display: flex; flex-direction: column; text-align: left; justify-content: center; align-items: center; width: 75%; margin: 2px auto;}
+            #PTPToRadarr_resetLink {position: absolute; bottom: 10px; left: 12%;}
+            #PTPToRadarr .saveclose_buttons {background-color: #e7e7e7; color: black; text-decoration: none; border: none; border-radius: 6px; height: 20px;}
+            #PTPToRadarr_radarr_syncbutton_var {height: 20px; padding: 0;}
+            #PTPToRadarr_field_radarr_syncbutton {background-color:#e7e7e7; cursor: pointer;  color: black; text-decoration: none; border: none; border-radius: 6px; padding: 2px 12px;}
+            #PTPToRadarr button {cursor: pointer; height: 20px; padding: 0;}
+            #PTPToRadarr_closeBtn {position: absolute; bottom: 10px; right: 12%; margin: 0 !important;}
+            `,
     "events": {
         "open": function (doc) {
             // Event handler for opening the config
@@ -79,7 +81,7 @@ GM_config.init({
             });
             let style = this.frame.style;
             style.width = "400px";
-            style.height = "295px";
+            style.height = "515px";
             style.inset = "";
             style.top = "6%";
             style.right = "6%";
@@ -101,7 +103,6 @@ GM_config.init({
             'label': 'Enable Radarr Auth',
             'type': 'checkbox',
             'default': false,
-            'section': ['Radarr Configuration', '']
         },
         'username': {
             'label': 'Username',
@@ -468,21 +469,13 @@ function createModal(obj) {
     let modalContent = document.createElement("div");
     modalContent.style.backgroundColor = "#000";
     modalContent.style.color = "#fff";
-    modalContent.style.margin = "15% auto";
-    modalContent.style.padding = "0px";
-    modalContent.style.border = "1px solid #888";
-    modalContent.style.width = "80%";
-    modalContent.style.maxWidth = "300px";
     modalContent.style.borderRadius = "5px";
 
     let closeButton = document.createElement("button");
     closeButton.textContent = "Close";
     closeButton.style.backgroundColor = "transparent";
     closeButton.style.color = "white";
-    closeButton.style.position = "absolute";
-    closeButton.style.top = "0px";
-    closeButton.style.right = "0px";
-    closeButton.style.padding = "5px 10px";
+    closeButton.style.cursor = "pointer";
     closeButton.onclick = function () {
         modal.style.display = "none";
     };
@@ -603,7 +596,7 @@ function new_movie_lookup(imdbid) {
             "X-Api-Key": radarr_apikey,
             "Accept": "application/json"
         },
-        onload: function(response) {
+        onload: function (response) {
             let responseJSON = null;
             if (!response.responseJSON) {
                 if (response.status == 401) {
@@ -622,11 +615,11 @@ function new_movie_lookup(imdbid) {
                 }
             }
         },
-        onerror: function() {
-          GM.notification("Request Error.\nCheck Radarr URL!", "PTP To Radarr");
+        onerror: function () {
+            GM.notification("Request Error.\nCheck Radarr URL!", "PTP To Radarr");
         },
-        onabort: function() {
-          GM.notification("Request is aborted.", "PTP To Radarr");
+        onabort: function () {
+            GM.notification("Request is aborted.", "PTP To Radarr");
         }
     });
 }
