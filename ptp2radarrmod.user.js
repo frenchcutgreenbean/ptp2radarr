@@ -30,6 +30,7 @@ Changelog 1.3   - Visual Mod Created By Prism16 Based on v1.2 by CatSpinner with
 
 */
 
+/*jshint esversion: 6 */
 var style = document.createElement('style');
 
 if (window.location.href.includes('user.php?action=edit')) {
@@ -75,6 +76,10 @@ GM_config.init({
             // Show/hide fields based on the initial state
             toggleAuthFields(enableAuth.checked);
 
+            GM_config.fields.password.node.type = 'password';
+
+            GM_config.fields.radarr_apikey.node.type = 'password';
+
             // Add event listener to toggle fields dynamically
             enableAuth.addEventListener('change', function () {
                 toggleAuthFields(enableAuth.checked);
@@ -112,7 +117,7 @@ GM_config.init({
         },
         'password': {
             'label': 'Password',
-            'type': 'password',
+            'type': 'text',
             'default': '',
             'hidden': true // Initially hidden
         },
