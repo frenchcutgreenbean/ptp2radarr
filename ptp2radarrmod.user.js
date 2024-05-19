@@ -76,10 +76,6 @@ GM_config.init({
             // Show/hide fields based on the initial state
             toggleAuthFields(enableAuth.checked);
 
-            GM_config.fields.password.node.type = 'password';
-
-            GM_config.fields.radarr_apikey.node.type = 'password';
-
             // Add event listener to toggle fields dynamically
             enableAuth.addEventListener('change', function () {
                 toggleAuthFields(enableAuth.checked);
