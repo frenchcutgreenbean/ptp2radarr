@@ -411,26 +411,33 @@ function fetchQualityProfiles() {
     }
 
     return new Promise((resolve, reject) => {
-        let xhr = new XMLHttpRequest();
-        if (enableAuth) {
-            xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-        }
-        xhr.open("GET", `${radarr_url}/api/v3/qualityprofile?apikey=${radarr_apikey}`, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                let data = JSON.parse(xhr.responseText);
-                let names = filterByName(data);
-                let ids = filterById(data);
-                let output = {};
-                for (let i = 0; i < names.length; i++) {
-                    let name = names[i];
-                    let id = ids[i];
-                    output[name.name] = id.id;
+        GM.xmlHttpRequest({
+            method: "GET",
+            url: `${radarr_url}/api/v3/qualityprofile?apikey=${radarr_apikey}`,
+            headers: headers,
+            onload: function (response) {
+                if (response.status == 200) {
+                    let data = JSON.parse(response.responseText);
+                    let names = filterByName(data);
+                    let ids = filterById(data);
+                    let output = {};
+                    for (let i = 0; i < names.length; i++) {
+                        let name = names[i];
+                        let id = ids[i];
+                        output[name.name] = id.id;
+                    }
+                    resolve(output);
+                } else {
+                    reject(`Error: ${response.status}`);
                 }
-                resolve(output);
+            },
+            onerror: function () {
+                reject("Request Error.\nCheck Radarr URL!");
+            },
+            onabort: function () {
+                reject("Request is aborted.");
             }
-        }
-        xhr.send();
+        });
     });
 }
 
@@ -470,13 +477,21 @@ function createModal(obj) {
     let modalContent = document.createElement("div");
     modalContent.style.backgroundColor = "#000";
     modalContent.style.color = "#fff";
+    modalContent.style.margin = "15% auto";
+    modalContent.style.padding = "0px";
+    modalContent.style.border = "1px solid #888";
+    modalContent.style.width = "80%";
+    modalContent.style.maxWidth = "300px";
     modalContent.style.borderRadius = "5px";
 
     let closeButton = document.createElement("button");
     closeButton.textContent = "Close";
     closeButton.style.backgroundColor = "transparent";
     closeButton.style.color = "white";
-    closeButton.style.cursor = "pointer";
+    closeButton.style.position = "absolute";
+    closeButton.style.top = "0px";
+    closeButton.style.right = "0px";
+    closeButton.style.padding = "5px 10px";
     closeButton.onclick = function () {
         modal.style.display = "none";
     };
